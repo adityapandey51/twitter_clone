@@ -3,6 +3,7 @@ import Image from "next/image";
 import { BsBell, BsBookmark, BsEnvelope, BsTwitter } from "react-icons/bs";
 import { BiHash, BiHomeCircle, BiMoney, BiUser } from "react-icons/bi";
 import { SlOptions } from "react-icons/sl";
+import FeedCard from "@/components/FeedCard";
 
 interface TwitterSidebarButton {
   title: string;
@@ -64,12 +65,22 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-            <div className="mt-5 px-3">
+            <div className="mt-5 px-1">
               <button className="bg-[#1d9bf0] font-semibold text-lg py-2 px-4 rounded-full w-full">
                 Tweet
               </button>
             </div>
           </div>
+        </div>
+        <div className="col-span-5 border-r-[0.25px] border-l-[0.25px] h-screen overflow-y-scroll no-scrollbar border-gray-700">
+            <FeedCard/>
+            <FeedCard/>
+            <FeedCard/>
+            <FeedCard/>
+            <FeedCard/>
+        </div>
+        <div className="col-span-3">
+
         </div>
       </div>
     </div>
