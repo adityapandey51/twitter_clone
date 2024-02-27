@@ -1,9 +1,12 @@
-import React from "react";
-import Image from "next/image";
+import React, { useCallback } from "react";
 import { BsBell, BsBookmark, BsEnvelope, BsTwitter } from "react-icons/bs";
 import { BiHash, BiHomeCircle, BiMoney, BiUser } from "react-icons/bi";
 import { SlOptions } from "react-icons/sl";
 import FeedCard from "@/components/FeedCard";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+import toast from "react-hot-toast";
+import { graphQLClient } from "@/clients/api";
+import { verifyUserGoogleToken } from "@/graphql/query/user";
 
 interface TwitterSidebarButton {
   title: string;
@@ -46,6 +49,24 @@ const sidebarMenuItems: TwitterSidebarButton[] = [
 ];
 
 export default function Home() {
+  const handleLoginWithGoogle=useCallback(async(cred:CredentialResponse)=>{
+    console.log("inside")
+      const googleToken=cred.credential;
+      if(!googleToken){
+        console.log("no token")
+        toast.error("Somethig wrong on your side");
+        return
+      };
+console.log("second")
+      const {verifyGoogleAuthToken}=await graphQLClient.request(
+        verifyUserGoogleToken,{token:googleToken}
+      )
+
+      console.log("third")
+      toast.success("Successfully Logged in")
+      console.log(verifyGoogleAuthToken)
+      
+  },[])
   return (
     <div>
       <div className="grid grid-cols-12 h-screen w-screen px-56">
@@ -73,14 +94,22 @@ export default function Home() {
           </div>
         </div>
         <div className="col-span-5 border-r-[0.25px] border-l-[0.25px] h-screen overflow-y-scroll no-scrollbar border-gray-700">
-            <FeedCard/>
-            <FeedCard/>
-            <FeedCard/>
-            <FeedCard/>
-            <FeedCard/>
+          <FeedCard />
+          <FeedCard />
+          <FeedCard />
+          <FeedCard />
+          <FeedCard />
         </div>
-        <div className="col-span-3">
-
+        <div className="col-span-3 px-8 py-4">
+          <div className="h-[150px] w-[400px] rounded-lg bg-slate-400 px-4 py-4">
+            <h1 className="mb-[10px] text-2xl">New to Twitter?</h1>
+            <GoogleLogin
+              onSuccess={handleLoginWithGoogle}
+              onError={() => {
+                console.log("Login Failed");
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>
