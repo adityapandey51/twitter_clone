@@ -6,12 +6,16 @@ import Image from "next/image";
 import { useCreateTweet, useGetAllTweets } from "@/hooks/tweet";
 import { Tweet } from "@/gql/graphql";
 import Twitterlayout from "@/components/layout/TwitterLayout";
+import { GetServerSideProps } from "next";
+import { graphQLClient } from "@/clients/api";
+import { getAllTweetsQuery } from "@/graphql/query/tweets";
 
+interface HomeProps{
+  tweets?:Tweet[]
+}
 
-
-export default function Home() {
+export default function Home(props:HomeProps) {
   const {user}=useCurrentUser()
-  const {tweets=[]}=useGetAllTweets()
   const {mutate}=useCreateTweet()
 
   const [content,setContent]=useState('')
@@ -70,7 +74,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        {tweets?.map((tweet) => {
+        {props.tweets?.map((tweet) => {
           return tweet ? (
             <FeedCard key={tweet?.id} data={tweet as Tweet} />
           ) : null;
@@ -78,4 +82,13 @@ export default function Home() {
       </Twitterlayout>
     </div>
   );
+}
+
+export const getServerSideProps:GetServerSideProps<HomeProps>=async(context)=>{
+  const allTweets=await graphQLClient.request(getAllTweetsQuery);
+  return {
+    props:{
+      tweets:allTweets.getAllTweets as Tweet[]
+    }
+  }
 }
